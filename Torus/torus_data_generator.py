@@ -13,7 +13,7 @@ seed = 0
 torch.manual_seed(seed)
 np.random.seed(seed)
 n_steps = 100 # Sequence Length
-N = 5000 # Batch Size
+N = 10000 # Batch Size
 max_hop = 0.1 # Scale parameter for velocities
 
 
@@ -29,11 +29,11 @@ for i in tqdm(range(N // 1000)):
 
 path = 'Torus\data'
 
-torch.save(pos, f'{path}\pos_1.pt')
-torch.save(V, f'{path}\V_1.pt')
-torch.save(X0, f'{path}\X0_1.pt')
+torch.save(pos, f'{path}\pos.pt')
+torch.save(V, f'{path}\V.pt')
+torch.save(X0, f'{path}\X0.pt')
 
-print(torch.load('Torus\data\X0_1.pt').shape)
+print(torch.load('Torus\data\X0.pt').shape)
 
 
 
