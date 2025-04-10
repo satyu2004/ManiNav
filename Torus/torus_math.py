@@ -1,5 +1,6 @@
 import torch
 torch.set_default_dtype(torch.float64)
+from geodesic_solver import Immersed_Manifold
 
 class Torus:
     def __init__(self, a, c):
@@ -13,7 +14,7 @@ class Torus:
         X = (self.c + self.a * torch.cos(y)) * torch.cos(x)
         Y = (self.c + self.a * torch.cos(y)) * torch.sin(x)
         Z = self.a * torch.sin(y)
-        return gs.stack(
+        return torch.stack(
             [X, Y, Z],
             axis=-1,
         ).to(device)
@@ -44,6 +45,12 @@ class Torus:
         third_row = torch.stack([torch.zeros_like(x) , -a * torch.cos(y) ],dim=1)
 
         jacobians = torch.stack([first_row, second_row, third_row], dim=1)
+        return jacobians
+    
+    def exp(self, base_pts, velocities):
+        "Computes exponential maps"
+        immersed_manifold = Immersed_Manifold(self.immersion)
+        return immersed_manifold.exp(base_pts, velocities)
 
 
     # def parallel_transport(x, v, angle=None):

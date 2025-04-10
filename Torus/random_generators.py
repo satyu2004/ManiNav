@@ -1,7 +1,8 @@
 import torch
 torch.set_default_dtype(torch.float64)
-import torus_math as torus_math
+import torus_math
 import numpy as np
+from tqdm import tqdm
 
 
 
@@ -39,13 +40,16 @@ def random_trajectories(X0, n_steps=20, max_hop=0.1):
       """
 
       N = X0.shape[0]
-      V, pos, V_3d, pos_3d =  torch.zeros((N, n_steps, 2), dtype=torch.float64), torch.zeros((N, n_steps, 2), dtype=torch.float64), torch.zeros((N, n_steps, 3), dtype=torch.float64), torch.zeros((N, n_steps, 3), dtype=torch.float64)
-      start_pts = X0
-      X0_3d = torus_math.immersion(start_pts)
+      # V, pos, V_3d, pos_3d =  torch.zeros((N, n_steps, 2), dtype=torch.float64), torch.zeros((N, n_steps, 2), dtype=torch.float64), torch.zeros((N, n_steps, 3), dtype=torch.float64), torch.zeros((N, n_steps, 3), dtype=torch.float64)
+      V, pos = torch.zeros((N, n_steps, 2), dtype=torch.float64), torch.zeros((N, n_steps, 2), dtype=torch.float64)
 
-      for i in range(n_steps):
+      start_pts = X0
+      torus = torus_math.Torus(a=1, c=4)  # Assuming Torus class is defined elsewhere
+      X0_3d = torus.immersion(start_pts)
+
+      for i in tqdm(range(n_steps)):
         # Compute Jacobian at this point
-        jacobians = torus_math.jacobian_matrix_batch(start_pts)
+        jacobians = torus.jacobian_matrix_batch(start_pts)
         pinvs = torch.linalg.pinv(jacobians)
 
         #Find its QR Decomposition
@@ -60,18 +64,20 @@ def random_trajectories(X0, n_steps=20, max_hop=0.1):
         random_tangents_3d = torch.bmm(Q, small_vectors)
         random_tangents = torch.bmm(pinvs, random_tangents_3d).squeeze()
         V[:,i,:] = random_tangents
-        random_tangents_3d = random_tangents_3d.squeeze()
-        V_3d[:,i,:] = random_tangents_3d
+        # random_tangents_3d = random_tangents_3d.squeeze()
+        # V_3d[:,i,:] = random_tangents_3d
 
         # Compute the exponential map of this vector
         # AXES = torch.cross(X0_3d,random_tangents_3d, dim=1)
         # AXES = AXES/torch.linalg.norm(AXES,dim=1).unsqueeze(-1)
         # ANGLE = torch.linalg.norm(random_tangents_3d,dim=1)
         # exponentials_3d = np.array([Quaternion(axis=AXES[i], angle=ANGLE[i]).rotate(X0_3d[i]) for i in range(AXES.shape[0])])
-        exponentials_3d = torus_math.parallel_transport(X0_3d, random_tangents_3d)[0] # retain only rotated_x from parallel transport
+        exponentials = torus.exp(start_pts, random_tangents)
         # exponentials_3d = torch.tensor(exponentials_3d)
-        pos_3d[:,i,:] = exponentials_3d
-        exponentials = torus_math.chart(exponentials_3d)
+        # pos_3d[:,i,:] = exponentials_3d
+        # exponentials = torus_math.chart(exponentials_3d)
+        # print(f"pos[:,i,:].shape={pos[:,i,:].shape}, exponentials.shape={exponentials.shape}")
         pos[:,i,:] = exponentials
         start_pts = exponentials
-      return V, pos, V_3d, pos_3d
+      # return V, pos, V_3d, pos_3d
+      return V, pos

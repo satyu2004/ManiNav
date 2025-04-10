@@ -68,7 +68,7 @@ def random_trajectories(X0, n_steps=20, max_hop=0.1):
         # AXES = AXES/torch.linalg.norm(AXES,dim=1).unsqueeze(-1)
         # ANGLE = torch.linalg.norm(random_tangents_3d,dim=1)
         # exponentials_3d = np.array([Quaternion(axis=AXES[i], angle=ANGLE[i]).rotate(X0_3d[i]) for i in range(AXES.shape[0])])
-        exponentials_3d = sphere_math.parallel_transport(X0_3d, random_tangents_3d)[0] # retain only rotated_x from parallel transport
+        exponentials_3d = sphere_math.parallel_transport(sphere_math.immersion(start_pts), random_tangents_3d)[0] # retain only rotated_x from parallel transport
         # exponentials_3d = torch.tensor(exponentials_3d)
         pos_3d[:,i,:] = exponentials_3d
         exponentials = sphere_math.chart(exponentials_3d)

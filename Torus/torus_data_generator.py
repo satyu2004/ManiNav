@@ -5,36 +5,35 @@ torch.set_default_dtype(torch.float64)
 import random_generators #local
 
 from scipy.stats import uniform_direction
-import Torus.torus_math as torus_math
+import torus_math
+
+from tqdm import tqdm
 
 seed = 0
 torch.manual_seed(seed)
 np.random.seed(seed)
 n_steps = 100 # Sequence Length
-N = 175000 # Batch Size
+N = 5000 # Batch Size
 max_hop = 0.1 # Scale parameter for velocities
 
 
 
+# Generate Initial Points
+X0 = 2 * torch.pi * torch.rand(N,2)
 
-# Pick initial point
-X0_3d = torch.tensor(uniform_direction.rvs(3, size=N))
-X0_3d[:,2] = -1 * torch.abs(X0_3d[:,2])
-indices = X0_3d[:,2]<-1/np.sqrt(2) # only retain points close to south pole
-X0_3d = X0_3d[indices]
-X0 = torus_math.chart(X0_3d)
-N = X0.shape[0]
+V, pos = torch.zeros((N, n_steps, 2)), torch.zeros((N, n_steps, 2))
 
-# print(N)
-# Generate Trajectories
-V, pos, V_3d, pos_3d = random_generators.random_trajectories(X0=X0, n_steps=n_steps, max_hop=max_hop)
+for i in tqdm(range(N // 1000)):
+    V[1000*i:1000*(i+1)], pos[1000*i:1000*(i+1)] = random_generators.random_trajectories(X0=X0[1000*i:1000*(i+1)], n_steps=n_steps, max_hop=max_hop)
 
-path = 'Sphere\data'
-torch.save(pos, f'{path}\pos.pt')
-torch.save(V, f'{path}\V.pt')
-torch.save(X0, f'{path}\X0.pt')
 
-print(torch.load('Sphere\data\X0.pt').shape)
+path = 'Torus\data'
+
+torch.save(pos, f'{path}\pos_1.pt')
+torch.save(V, f'{path}\V_1.pt')
+torch.save(X0, f'{path}\X0_1.pt')
+
+print(torch.load('Torus\data\X0_1.pt').shape)
 
 
 
