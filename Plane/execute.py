@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 
 import pickle
 
-def execute(model_name, path, hidden_dims, N_trajectories, num_epochs=1000, batch_size=1024, n_runs=10):
+def execute(model_name, path, hidden_dims, N_trajectories, num_layers=None, num_epochs=1000, batch_size=1024, n_runs=10):
     """
     Arguments:
     model_name (str): Name of the model to use ('RNN', 'LSTM', 'GRU').
@@ -59,12 +59,16 @@ def execute(model_name, path, hidden_dims, N_trajectories, num_epochs=1000, batc
         base_architecture = models.ConditionalLSTM
     elif model_name == 'GRU':
         base_architecture = models.ConditionalGRU
+    elif model_name == 'RNN_multilayer':
+        base_architecture = models.RNN_multilayer
     else:
         raise ValueError(f'Invalid model name: {model_name}')
 
     X0, V, pos = torch.load(f'{path}\data\X0.pt').to(device)[:N_trajectories], torch.load(f'{path}\data\V.pt').to(device)[:N_trajectories], torch.load(f'{path}\data\pos.pt').to(device)[:N_trajectories]
-    RNN_models = [[base_architecture(hidden_size=d)]*n_runs for d in hidden_dims]
-
+    if model_name in ['RNN', 'LSTM', 'GRU']:
+        RNN_models = [[base_architecture(hidden_size=d)]*n_runs for d in hidden_dims]
+    elif model_name == 'RNN_multilayer':
+        RNN_models = [[base_architecture(hidden_size=d, num_layers=num_layers)]*n_runs for d in hidden_dims]
     N = X0.shape[0]
     n = V.shape[1]
     # Data Preparation and Train-Test Splitting

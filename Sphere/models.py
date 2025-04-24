@@ -24,7 +24,7 @@ class RNN(nn.Module):
 
 class RNN_multilayer(nn.Module):
     def __init__(self, hidden_size, input_size=2, output_size=2, num_layers=2):
-        super(RNN, self).__init__()
+        super(RNN_multilayer, self).__init__()
         self.hidden_size = hidden_size
         self.num_layers = num_layers
 
@@ -35,11 +35,11 @@ class RNN_multilayer(nn.Module):
 
     def forward(self, x_0, V):
         # Initialize hidden state
-        h_0 = torch.stack([self.encoder[i](x_0) for i in range(num_layers)], dim=0)
+        h_0 = torch.stack([self.encoder[i](x_0) for i in range(self.num_layers)], dim=0)
 
         # Forward pass through RNN
         out = self.rnn(V, h_0)
-        out = self.decoder(out[1])
+        out = self.decoder(out[1][-1])
 
         return out
 

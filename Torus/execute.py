@@ -1,6 +1,6 @@
 # from training_loops import RNN_train_aggregated as train
 
-from Torus.torus_math import immersion, chart
+from torus_math import Torus
 import models
 
 import torch
@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 
 import pickle
 
-def execute(model_name, path, hidden_dims, N_trajectories, num_epochs=1000, batch_size=1024, n_runs=10):
+def execute(model_name, path, hidden_dims, N_trajectories, num_layers=None, num_epochs=1000, batch_size=1024, n_runs=10):
     def pickle_list(my_list, filename):
         """
         Pickles a list and saves it to a file.
@@ -46,11 +46,16 @@ def execute(model_name, path, hidden_dims, N_trajectories, num_epochs=1000, batc
         base_architecture = models.ConditionalLSTM
     elif model_name == 'GRU':
         base_architecture = models.ConditionalGRU
+    elif model_name == 'RNN_multilayer':
+        base_architecture = models.RNN_multilayer        
     else:
         raise ValueError(f'Invalid model name: {model_name}')
 
     X0, V, pos = torch.load(f'{path}\data\X0.pt').to(device)[:N_trajectories], torch.load(f'{path}\data\V.pt').to(device)[:N_trajectories], torch.load(f'{path}\data\pos.pt').to(device)[:N_trajectories]
-    RNN_models = [[base_architecture(hidden_size=d)]*n_runs for d in hidden_dims]
+    if model_name in ['RNN', 'LSTM', 'GRU']:
+        RNN_models = [[base_architecture(hidden_size=d)]*n_runs for d in hidden_dims]
+    elif model_name == 'RNN_multilayer':
+        RNN_models = [[base_architecture(hidden_size=d, num_layers=num_layers)]*n_runs for d in hidden_dims]
 
     N = X0.shape[0]
     n = V.shape[1]
@@ -62,6 +67,8 @@ def execute(model_name, path, hidden_dims, N_trajectories, num_epochs=1000, batc
     V_test = V[int(train_test_split*N):]
     pos_train = pos[:int(train_test_split*N)]
     pos_test = pos[int(train_test_split*N):]
+
+    torus = Torus(a=1, c=4)
 
 
 
@@ -94,7 +101,7 @@ def execute(model_name, path, hidden_dims, N_trajectories, num_epochs=1000, batc
                 for i in L:
                     Yhat = net(X,V[:,:i]).squeeze()
                     criterion = nn.MSELoss()
-                    loss += criterion(immersion(Y[:,i-1]), immersion(Yhat))
+                    loss += criterion(torus.immersion(Y[:,i-1]), torus.immersion(Yhat))
 
 
                 # Backward pass and optimization
