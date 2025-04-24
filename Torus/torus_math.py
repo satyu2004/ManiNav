@@ -38,11 +38,11 @@ class Torus:
         """
         a,c = self.a, self.c
 
-        x, y = pts[:, 0], pts[:, 1]
+        x, y = pts[..., 0], pts[..., 1]
         # denominator = (x**2 + y**2 + 1)**2
-        first_row = torch.stack([-(c + a * torch.cos(y)) * torch.sin(x) , -a * torch.sin(y) * torch.cos(x)],dim=1)
-        second_row = torch.stack([(c + a * torch.cos(y)) * torch.cos(x) , -a * torch.sin(y) * torch.sin(x)],dim=1)
-        third_row = torch.stack([torch.zeros_like(x) , -a * torch.cos(y) ],dim=1)
+        first_row = torch.stack([-(c + a * torch.cos(y)) * torch.sin(x) , -a * torch.sin(y) * torch.cos(x)],dim=-1)
+        second_row = torch.stack([(c + a * torch.cos(y)) * torch.cos(x) , -a * torch.sin(y) * torch.sin(x)],dim=-1)
+        third_row = torch.stack([torch.zeros_like(x) , a * torch.cos(y) ],dim=-1)
 
         jacobians = torch.stack([first_row, second_row, third_row], dim=1)
         return jacobians

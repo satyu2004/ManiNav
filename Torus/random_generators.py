@@ -63,6 +63,7 @@ def random_trajectories(X0, n_steps=20, max_hop=0.1):
         # Map it into the tangent space and pull back to chart
         random_tangents_3d = torch.bmm(Q, small_vectors)
         random_tangents = torch.bmm(pinvs, random_tangents_3d).squeeze()
+        # print(f"random_tangents.shape={random_tangents.shape}, random_tangents_3d.shape={random_tangents_3d.shape}")
         V[:,i,:] = random_tangents
         # random_tangents_3d = random_tangents_3d.squeeze()
         # V_3d[:,i,:] = random_tangents_3d

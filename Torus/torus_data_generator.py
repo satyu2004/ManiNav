@@ -4,7 +4,7 @@ import torch
 torch.set_default_dtype(torch.float64)
 import random_generators #local
 
-from scipy.stats import uniform_direction
+# from scipy.stats import uniform_direction
 import torus_math
 
 from tqdm import tqdm
@@ -23,18 +23,19 @@ X0 = 2 * torch.pi * torch.rand(N,2)
 
 V, pos = torch.zeros((N, n_steps, 2)), torch.zeros((N, n_steps, 2))
 
-for i in tqdm(range(N // 1000)):
-    V[1000*i:1000*(i+1)], pos[1000*i:1000*(i+1)] = random_generators.random_trajectories(X0=X0[1000*i:1000*(i+1)], n_steps=n_steps, max_hop=max_hop)
+minibatch_size = 1000
+for i in tqdm(range(N // minibatch_size)):
+    V[minibatch_size*i:minibatch_size*(i+1)], pos[minibatch_size*i:minibatch_size*(i+1)] = random_generators.random_trajectories(X0=X0[minibatch_size*i:minibatch_size*(i+1)], n_steps=n_steps, max_hop=max_hop)
 
 
-path = 'Torus\data'
+path = 'data'
 
 torch.save(pos, f'{path}\pos.pt')
 torch.save(V, f'{path}\V.pt')
 torch.save(X0, f'{path}\X0.pt')
 
-print(torch.load('Torus\data\X0.pt').shape)
-
+# print(torch.load('Torus\data\X0.pt').shape)
+print(torch.load('data\X0.pt').shape)
 
 
 
