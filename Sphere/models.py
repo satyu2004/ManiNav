@@ -22,6 +22,27 @@ class RNN(nn.Module):
 
         return out
 
+# class RNN_multilayer(nn.Module):
+#     def __init__(self, hidden_size, input_size=2, output_size=2, num_layers=2):
+#         super(RNN_multilayer, self).__init__()
+#         self.hidden_size = hidden_size
+#         self.num_layers = num_layers
+
+#         # self.encoder = nn.Linear(2*output_size, hidden_size)
+#         self.encoder = [nn.Linear(input_size, hidden_size)]*num_layers
+#         self.rnn = nn.RNN(input_size, hidden_size, num_layers,nonlinearity='relu', bias=False, batch_first=True)
+#         self.decoder = nn.Linear(hidden_size, output_size)
+
+#     def forward(self, x_0, V):
+#         # Initialize hidden state
+#         h_0 = torch.stack([self.encoder[i](x_0) for i in range(self.num_layers)], dim=0)
+
+#         # Forward pass through RNN
+#         out = self.rnn(V, h_0)
+#         out = self.decoder(out[1][-1])
+
+#         return out
+
 class RNN_multilayer(nn.Module):
     def __init__(self, hidden_size, input_size=2, output_size=2, num_layers=2):
         super(RNN_multilayer, self).__init__()
@@ -29,7 +50,9 @@ class RNN_multilayer(nn.Module):
         self.num_layers = num_layers
 
         # self.encoder = nn.Linear(2*output_size, hidden_size)
-        self.encoder = [nn.Linear(input_size, hidden_size)]*num_layers
+        # self.encoder = [nn.Linear(input_size, hidden_size)]*num_layers # original version
+
+        self.encoder = nn.ModuleList([nn.Linear(input_size, hidden_size) for _ in range(num_layers)])
         self.rnn = nn.RNN(input_size, hidden_size, num_layers,nonlinearity='relu', bias=False, batch_first=True)
         self.decoder = nn.Linear(hidden_size, output_size)
 
@@ -39,7 +62,8 @@ class RNN_multilayer(nn.Module):
 
         # Forward pass through RNN
         out = self.rnn(V, h_0)
-        out = self.decoder(out[1][-1])
+        # out = self.decoder(out[1][-1])
+        out = self.decoder(out[0])
 
         return out
 
