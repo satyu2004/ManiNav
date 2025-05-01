@@ -2,6 +2,7 @@ import torch
 torch.set_default_dtype(torch.float64)
 from geodesic_solver import Immersed_Manifold
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 def model_tanh(hidden_dims: list):
     model = torch.nn.Sequential(
         torch.nn.Linear(2, hidden_dims[0]),
@@ -12,8 +13,9 @@ def model_tanh(hidden_dims: list):
     )
     return model
 
-f = model_tanh([32, 32])
-f.load_state_dict(torch.load('Recon_Surface\\neural_surface.pth'))
+f = model_tanh([32, 32]).to(device)
+# f.load_state_dict(torch.load('Recon_Surface\\neural_surface.pth'))
+f.load_state_dict(torch.load('neural_surface.pth'))
 
 
 class Surface:
