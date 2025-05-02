@@ -1,6 +1,6 @@
 # from training_loops import RNN_train_aggregated as train
 
-from torus_math import Torus
+from surface_math import Torus
 import models
 
 import torch
@@ -68,7 +68,7 @@ def execute(model_name, path, hidden_dims, N_trajectories, num_layers=None, num_
     pos_train = pos[:int(train_test_split*N)]
     pos_test = pos[int(train_test_split*N):]
 
-    torus = Torus(a=1, c=4)
+    surface = Surface()
 
 
 
@@ -101,7 +101,7 @@ def execute(model_name, path, hidden_dims, N_trajectories, num_layers=None, num_
                 for i in L:
                     Yhat = net(X,V[:,:i]).squeeze()
                     criterion = nn.MSELoss()
-                    loss += criterion(torus.immersion(Y[:,i-1]), torus.immersion(Yhat))
+                    loss += criterion(surface.immersion(Y[:,i-1]), surface.immersion(Yhat))
 
 
                 # Backward pass and optimization
