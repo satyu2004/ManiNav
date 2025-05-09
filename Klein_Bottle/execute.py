@@ -1,6 +1,6 @@
 # from training_loops import RNN_train_aggregated as train
 
-from Klein_Bottle.kb_math import Torus
+from kb_math import Klein_Bottle
 import models
 
 import torch
@@ -68,7 +68,7 @@ def execute(model_name, path, hidden_dims, N_trajectories, num_layers=None, num_
     pos_train = pos[:int(train_test_split*N)]
     pos_test = pos[int(train_test_split*N):]
 
-    torus = Torus(a=1, c=4)
+    klein_bottle = Klein_Bottle(a=1, c=4)
 
 
 
@@ -101,7 +101,7 @@ def execute(model_name, path, hidden_dims, N_trajectories, num_layers=None, num_
                 for i in L:
                     Yhat = net(X,V[:,:i]).squeeze()
                     criterion = nn.MSELoss()
-                    loss += criterion(torus.immersion(Y[:,i-1]), torus.immersion(Yhat))
+                    loss += criterion(klein_bottle.immersion(Y[:,i-1]), klein_bottle.immersion(Yhat))
 
 
                 # Backward pass and optimization

@@ -98,6 +98,11 @@ def execute(model_name, path, hidden_dims, N_trajectories, num_layers=None, num_
                 Y = minibatch[2].to(device)
                 loss = 0
 
+                # with torch.no_grad():
+                #     # Compute the loss
+                # criterion = nn.MSELoss()
+                # Y_hat = net(X, V[:,:L])
+                # loss = criterion(surface.immersion(Y[:,:L]), surface.immersion(Y_hat))
                 for i in L:
                     Yhat = net(X,V[:,:i]).squeeze()
                     criterion = nn.MSELoss()

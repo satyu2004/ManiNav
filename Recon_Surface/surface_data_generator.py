@@ -16,8 +16,8 @@ import gc
 seed = 0
 torch.manual_seed(seed)
 np.random.seed(seed)
-n_steps = 40 # Sequence Length
-N = 10000 # Batch Size
+n_steps = 100 # Sequence Length
+N = 50000 # Batch Size
 max_hop = 0.1 # Scale parameter for velocities
 
 
@@ -40,13 +40,20 @@ for k in tqdm(range(n_steps)):
     torch.cuda.empty_cache()
 
 print(f"X0 shape: {X0.shape}, V shape: {V.shape}, pos shape: {pos.shape}")
-# path = 'Recon_Surface\\data'
-# path = 'data'
+# # path = 'Recon_Surface\\data'
+# path = 'data\\50k'
 
-torch.save(pos, f'pos.pt')
-torch.save(V, f'V.pt')
-torch.save(X0, f'X0.pt')
+# torch.save(pos, f'pos.pt')
+# torch.save(V, f'V.pt')
+# torch.save(X0, f'X0.pt')
+
+path = 'data'
+
+torch.save(pos, f'{path}\\50k\pos.pt')
+torch.save(V, f'{path}\\50k\V.pt')
+torch.save(X0, f'{path}\\50k\X0.pt')
 
 # print(torch.load('Torus\data\X0.pt').shape)
-print(torch.load(f'X0.pt').shape)
+# print(torch.load(f'X0.pt').shape)
+print(torch.load(f'{path}\\50k\X0.pt').shape)
 

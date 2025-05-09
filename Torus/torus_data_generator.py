@@ -8,12 +8,17 @@ import random_generators #local
 import torus_math
 
 from tqdm import tqdm
+import os
+import pdb
+
+# print(os.getcwd())
+# pdb.set_trace()
 
 seed = 0
 torch.manual_seed(seed)
 np.random.seed(seed)
 n_steps = 100 # Sequence Length
-N = 10000 # Batch Size
+N = 50000 # Batch Size
 max_hop = 0.1 # Scale parameter for velocities
 
 
@@ -23,19 +28,19 @@ X0 = 2 * torch.pi * torch.rand(N,2)
 
 V, pos = torch.zeros((N, n_steps, 2)), torch.zeros((N, n_steps, 2))
 
-minibatch_size = 1000
+minibatch_size = 10000
 for i in tqdm(range(N // minibatch_size)):
     V[minibatch_size*i:minibatch_size*(i+1)], pos[minibatch_size*i:minibatch_size*(i+1)] = random_generators.random_trajectories(X0=X0[minibatch_size*i:minibatch_size*(i+1)], n_steps=n_steps, max_hop=max_hop)
 
 
 path = 'data'
 
-torch.save(pos, f'{path}\pos.pt')
-torch.save(V, f'{path}\V.pt')
-torch.save(X0, f'{path}\X0.pt')
+torch.save(pos, f'{path}\\50k\pos.pt')
+torch.save(V, f'{path}\\50k\V.pt')
+torch.save(X0, f'{path}\\50k\X0.pt')
 
 # print(torch.load('Torus\data\X0.pt').shape)
-print(torch.load('data\X0.pt').shape)
+print(torch.load('data\\50k\X0.pt').shape)
 
 
 

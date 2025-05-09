@@ -51,7 +51,7 @@ class Immersed_Manifold:
         Returns:
             torch.Tensor: Tensor of shape (N, 2, 2) representing the inverse metric tensor.
         """
-        G = self.compute_metric_tensor(pts)
+        G = (self.compute_metric_tensor(pts)).detach()
         det_G = G[:, 0, 0] * G[:, 1, 1] - G[:, 0, 1] * G[:, 1, 0]
         inv_det_G = 1.0 / det_G
         g11 = G[:, 0, 0]
@@ -77,12 +77,22 @@ class Immersed_Manifold:
         x_u = x_uv[:, 0, :]
         x_v = x_uv[:, 1, :]
 
-        g11_u = torch.autograd.grad(G[:, 0, 0].sum(), pts, create_graph=True)[0][:, 0]
-        g11_v = torch.autograd.grad(G[:, 0, 0].sum(), pts, create_graph=True)[0][:, 1]
-        g12_u = torch.autograd.grad(G[:, 0, 1].sum(), pts, create_graph=True)[0][:, 0]
-        g12_v = torch.autograd.grad(G[:, 0, 1].sum(), pts, create_graph=True)[0][:, 1]
-        g22_u = torch.autograd.grad(G[:, 1, 1].sum(), pts, create_graph=True)[0][:, 0]
-        g22_v = torch.autograd.grad(G[:, 1, 1].sum(), pts, create_graph=True)[0][:, 1]
+        # g11_u = torch.autograd.grad(G[:, 0, 0].sum(), pts, create_graph=True)[0][:, 0]
+        # g11_v = torch.autograd.grad(G[:, 0, 0].sum(), pts, create_graph=True)[0][:, 1]
+        # g12_u = torch.autograd.grad(G[:, 0, 1].sum(), pts, create_graph=True)[0][:, 0]
+        # g12_v = torch.autograd.grad(G[:, 0, 1].sum(), pts, create_graph=True)[0][:, 1]
+        # g22_u = torch.autograd.grad(G[:, 1, 1].sum(), pts, create_graph=True)[0][:, 0]
+        # g22_v = torch.autograd.grad(G[:, 1, 1].sum(), pts, create_graph=True)[0][:, 1]
+        
+        # Compute each gradient only once
+        g11_grad = torch.autograd.grad(G[:, 0, 0].sum(), pts, create_graph=True)[0]
+        g12_grad = torch.autograd.grad(G[:, 0, 1].sum(), pts, create_graph=True)[0]
+        g22_grad = torch.autograd.grad(G[:, 1, 1].sum(), pts, create_graph=True)[0]
+
+        # Extract u and v components
+        g11_u, g11_v = g11_grad[:, 0].detach(), g11_grad[:, 1].detach()
+        g12_u, g12_v = g12_grad[:, 0].detach(), g12_grad[:, 1].detach()
+        g22_u, g22_v = g22_grad[:, 0].detach(), g22_grad[:, 1].detach()
 
         gamma111 = 0.5 * (G_inv[:, 0, 0] * (2 * g11_u - g11_u) + G_inv[:, 0, 1] * (g11_v + g12_u - g12_u))
         gamma112 = 0.5 * (G_inv[:, 1, 0] * (2 * g11_u - g11_v) + G_inv[:, 1, 1] * (g11_v + g12_u - g22_u))

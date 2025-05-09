@@ -1,3 +1,3 @@
 from execute import execute
 
-execute(model_name='LSTM', path='Torus', hidden_dims=[64], N_trajectories=10000, num_epochs=1000)
+execute(model_name='LSTM', path='Klein_Bottle', hidden_dims=[64], N_trajectories=10000, num_epochs=1000)

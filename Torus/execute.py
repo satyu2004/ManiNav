@@ -10,17 +10,17 @@ import torch.nn as nn
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 import torch.optim as optim
 import numpy as np
-import seaborn as sns
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
+# import seaborn as sns
+# from sklearn.decomposition import PCA
+# from sklearn.preprocessing import StandardScaler
 
-from scipy.stats import uniform_direction
+# from scipy.stats import uniform_direction
 
 import time
 from tqdm import tqdm
 
-import pandas as pd
-import matplotlib.pyplot as plt
+# import pandas as pd
+# import matplotlib.pyplot as plt
 
 import pickle
 
@@ -69,10 +69,11 @@ def execute(model_name, path, hidden_dims, N_trajectories, num_layers=None, num_
     pos_test = pos[int(train_test_split*N):]
 
     torus = Torus(a=1, c=4)
+    immersion = torus.immersion
 
 
 
-    def train(net, X0, V, pos, seq_length, indices_to_aggregate=[], lr=0.01, batch_size = 1024, num_epochs = num_epochs):
+    def train(net, X0, V, pos, seq_length, indices_to_aggregate=[], lr=0.01, batch_size = batch_size, num_epochs = num_epochs):
         k = seq_length
         # Define optimizer and scheduler
         optimizer = optim.Adam(net.parameters(), lr = lr)  # Example optimizer
@@ -98,10 +99,15 @@ def execute(model_name, path, hidden_dims, N_trajectories, num_layers=None, num_
                 Y = minibatch[2].to(device)
                 loss = 0
 
+                # max_index = max(L)
+                # Yhat = net(X,V[:,:max_index]).squeeze()
+                # criterion = nn.MSELoss()
+                # for i in L:
+                #     loss += criterion(torus.immersion(Y[:,i-1]), torus.immersion(Yhat))
                 for i in L:
                     Yhat = net(X,V[:,:i]).squeeze()
                     criterion = nn.MSELoss()
-                    loss += criterion(torus.immersion(Y[:,i-1]), torus.immersion(Yhat))
+                    loss += criterion(immersion(Y[:,i-1]), immersion(Yhat))
 
 
                 # Backward pass and optimization

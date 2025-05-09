@@ -18,8 +18,8 @@ class RNN(nn.Module):
 
         # Forward pass through RNN
         out = self.rnn(V, h_0)
-        out = self.decoder(out[1])
-
+        # out = self.decoder(out[1])
+        out = self.decoder(out[0])
         return out
 
 # class RNN_multilayer(nn.Module):
@@ -85,8 +85,9 @@ class ConditionalLSTM(nn.Module):
         lstm_out, _ = self.lstm(V, (initial_hidden, initial_cell))
 
         # Take the output from the last time step
-        last_time_step_output = lstm_out[:, -1, :]
-        output = self.fc(last_time_step_output)
+        # last_time_step_output = lstm_out[:, -1, :]
+        # output = self.fc(last_time_step_output)
+        output = self.fc(lstm_out)
         return output
     
 
@@ -108,6 +109,7 @@ class ConditionalGRU(nn.Module):
         gru_out, _ = self.gru(V, initial_hidden)
 
         # Take the output from the last time step
-        last_time_step_output = gru_out[:, -1, :]
-        output = self.fc(last_time_step_output)
+        # last_time_step_output = gru_out[:, -1, :]
+        # output = self.fc(last_time_step_output)
+        output = self.fc(gru_out)
         return output

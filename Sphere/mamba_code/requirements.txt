@@ -1,0 +1,23 @@
+# Core dependencies
+torch>=2.0
+torchvision  # Optional, but often comes with torch installs
+torchaudio    # Optional, often bundled with torch installs
+
+# Mamba (State Space Models)
+mamba-ssm>=1.1.1
+
+# YAML config support
+pyyaml
+
+# For optional lazy loading with h5py
+h5py
+
+# For deterministic training (optional, if needed)
+numpy
+
+# Transformers (optional, if keeping any HuggingFace dependencies)
+transformers>=4.36.0
+
+# Logging (optional, for extensions like TensorBoard or WandB)
+# tensorboard
+# wandb

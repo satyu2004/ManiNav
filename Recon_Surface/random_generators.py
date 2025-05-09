@@ -92,7 +92,7 @@ def random_hops(start_pts, max_hop=0.1):
 
       # for i in tqdm(range(n_steps)):
         # Compute Jacobian at this point
-      jacobians = surface.jacobian_matrix_batch(start_pts)
+      jacobians = (surface.jacobian_matrix_batch(start_pts)).detach()
       pinvs = torch.linalg.pinv(jacobians)
 
       #Find its QR Decomposition
